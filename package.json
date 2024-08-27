@@ -1,0 +1,34 @@
+{
+  "name": "my-electron-app",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "nodemon --exec electron .",
+    "build": "electron-builder" 
+  },
+  "build": {
+    "appId": "com.electron.demo", 
+    "win": {
+      "icon":"./logo.ico",
+      "target": [
+        {
+          "target": "nsis",  
+          "arch": ["x64"]  
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false, 
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "author": "RanGuMo",
+  "description": "this is a electron demo",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^32.0.1",
+    "electron-builder": "^24.13.3",
+    "nodemon": "^3.1.4"
+  }
+}
