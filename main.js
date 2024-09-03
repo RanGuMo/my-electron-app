@@ -2,7 +2,7 @@
 // 控制渲染进程等其他操作。
 
 // 引入：app（整个应用）、BrowserWindow（用于创建窗口）、ipcMain（用于进程通信）
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, Menu, MenuItem } = require("electron");
 // 引入path模块
 const path = require("path");
 // 引入fs模块
@@ -57,6 +57,19 @@ function createWindow() {
 // 1.3.当 window 被加载，就执行创建窗口这个函数
 app.on("ready", () => {
   createWindow();
+  // 右键菜单
+  const menu = new Menu();
+  menu.append(new MenuItem({ label: "复制", role: "copy" }));
+  menu.append(new MenuItem({ label: "粘贴", role: "paste" }));
+  menu.append(new MenuItem({ label: "全选", role: "selectall" }));
+  menu.append(new MenuItem({ label: "刷新", role: "reload" }));
+  menu.append(new MenuItem({ label: "剪切", role: "cut" }));
+  menu.append(new MenuItem({ label: "删除", role: "delete" }));
+  menu.append(new MenuItem({ label: "撤销", role: "undo" }));
+  menu.append(new MenuItem({ label: "重做", role: "redo" }));
+  mainWindow.webContents.on("context-menu", (e, params) => {
+    menu.popup({ window: mainWindow, x: params.x, y: params.y });
+  });
   // 1.6.在 mac上，点击 Dock 图标且没有其他窗口打开时，重新创建窗口
   // 当应用被激活时
   app.on("activate", () => {
