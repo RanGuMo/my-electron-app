@@ -18,3 +18,12 @@ contextBridge.exposeInMainWorld("myAPI", {
     return ipcRenderer.on("message",callback)
   }
 });
+
+// =============================创建通知========================
+const NOTIFICATION_TITLE = '通知'
+const NOTIFICATION_BODY =
+  '通知内容'
+const CLICK_MESSAGE = '我被点击了'
+
+new Notification(NOTIFICATION_TITLE, { body: NOTIFICATION_BODY }).onclick =
+  () => alert(CLICK_MESSAGE)
