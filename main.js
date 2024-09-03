@@ -2,7 +2,14 @@
 // 控制渲染进程等其他操作。
 
 // 引入：app（整个应用）、BrowserWindow（用于创建窗口）、ipcMain（用于进程通信）
-const { app, BrowserWindow, ipcMain, Menu, MenuItem } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  MenuItem,
+  Tray,
+} = require("electron");
 // 引入path模块
 const path = require("path");
 // 引入fs模块
@@ -21,6 +28,57 @@ function createFile(event, data) {
 function readFile() {
   const res = fs.readFileSync("D:/hello.txt").toString();
   return res;
+}
+
+function tray() {
+  const tray = new Tray("./pages/assets/logo.png");
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "关于",
+      click: () => {
+        alert("关于");
+      },
+    },
+    {
+      label: "帮助",
+      click: () => {
+        alert("帮助");
+      },
+    },
+    {
+      label: "设置",
+      click: () => {
+        alert("设置");
+      },
+    },
+    {
+      role: "mminize",
+      label: "最小化",
+      click: () => {
+        mainWindow.minimize();
+      },
+    },
+    {
+      role: "togglefullscreen",
+      label: "全屏",
+      click: () => {
+        mainWindow.setFullScreen(mainWindow.isFullScreen()!==true);
+      },
+    },
+    {
+      label: "退出",
+      click: () => {
+        app.quit();
+      },
+    },
+  ]);
+  tray.setToolTip(app.name);
+  tray.on("right-click", () => {
+    tray.popUpContextMenu(contextMenu);
+  });
+  tray.on("click", () => {
+    mainWindow.show();
+  });
 }
 
 // 1.创建浏览器窗口。
@@ -70,6 +128,9 @@ app.on("ready", () => {
   mainWindow.webContents.on("context-menu", (e, params) => {
     menu.popup({ window: mainWindow, x: params.x, y: params.y });
   });
+
+  // 系统托盘
+  tray();
   // 1.6.在 mac上，点击 Dock 图标且没有其他窗口打开时，重新创建窗口
   // 当应用被激活时
   app.on("activate", () => {
