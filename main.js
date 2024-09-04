@@ -62,7 +62,7 @@ function tray() {
       role: "togglefullscreen",
       label: "全屏",
       click: () => {
-        mainWindow.setFullScreen(mainWindow.isFullScreen()!==true);
+        mainWindow.setFullScreen(mainWindow.isFullScreen() !== true);
       },
     },
     {
@@ -81,13 +81,114 @@ function tray() {
   });
 }
 
+function ApplicationMenu() {
+  const isMac = process.platform === "darwin";
+
+  const template = [
+    // { role: 'appMenu' }
+    ...(isMac
+      ? [
+          {
+            label: app.name,
+            submenu: [
+              { role: "about" },
+              { type: "separator" },
+              { role: "services" },
+              { type: "separator" },
+              { role: "hide" },
+              { role: "hideOthers" },
+              { role: "unhide" },
+              { type: "separator" },
+              { role: "quit" },
+            ],
+          },
+        ]
+      : []),
+    // { role: 'fileMenu' }
+    {
+      label: "File",
+      submenu: [isMac ? { role: "close" } : { role: "quit",label:'退出' }],
+    },
+    // { role: 'editMenu' }
+    {
+      label: "Edit",
+      submenu: [
+        { role: "undo" },
+        { role: "redo" },
+        { type: "separator" },
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
+        ...(isMac
+          ? [
+              { role: "pasteAndMatchStyle" },
+              { role: "delete" },
+              { role: "selectAll" },
+              { type: "separator" },
+              {
+                label: "Speech",
+                submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
+              },
+            ]
+          : [{ role: "delete" }, { type: "separator" }, { role: "selectAll" }]),
+      ],
+    },
+    // { role: 'viewMenu' }
+    {
+      label: "View",
+      submenu: [
+        { role: "reload" },
+        { role: "forceReload" },
+        { role: "toggleDevTools" },
+        { type: "separator" },
+        { role: "resetZoom" },
+        { role: "zoomIn" },
+        { role: "zoomOut" },
+        { type: "separator" },
+        { role: "togglefullscreen" },
+      ],
+    },
+    // { role: 'windowMenu' }
+    {
+      label: "Window",
+      submenu: [
+        { role: "minimize" },
+        { role: "zoom" },
+        ...(isMac
+          ? [
+              { type: "separator" },
+              { role: "front" },
+              { type: "separator" },
+              { role: "window" },
+            ]
+          : [{ role: "close" }]),
+      ],
+    },
+    {
+      role: "help",
+      submenu: [
+        {
+          label: "Learn More",
+          click: async () => {
+            const { shell } = require("electron");
+            await shell.openExternal("https://electronjs.org");
+          },
+        },
+      ],
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
 // 1.创建浏览器窗口。
 function createWindow() {
   // 1.1.创建浏览器窗口。
   mainWindow = new BrowserWindow({
     width: 800, // 宽度
     height: 600, // 高度
-    autoHideMenuBar: true, // 自动隐藏菜单栏（默认是false）
+    autoHideMenuBar: false, // 自动隐藏菜单栏（默认是false）
     alwysOnTop: true, // 窗口置顶(类似z-index:9999，永远置于最高层) （默认是false）
     x: 0, // 窗口左上角x坐标
     y: 0, // 窗口左上角y坐标
@@ -131,6 +232,8 @@ app.on("ready", () => {
 
   // 系统托盘
   tray();
+  // 应用级菜单
+  ApplicationMenu();
   // 1.6.在 mac上，点击 Dock 图标且没有其他窗口打开时，重新创建窗口
   // 当应用被激活时
   app.on("activate", () => {
