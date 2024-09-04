@@ -229,7 +229,7 @@ function createWindow() {
       preload: path.join(__dirname, "./preload.js"),
     },
   });
-  // 文件对话框
+  // 文件浏览对话框
   createDialog(mainWindow)
   // 2.1.主进程注册对应的事件
   ipcMain.on("create-file", createFile);
