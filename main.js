@@ -10,6 +10,7 @@ const {
   MenuItem,
   Tray,
   dialog,
+  screen,
 } = require("electron");
 // 引入path模块
 const path = require("path");
@@ -246,10 +247,16 @@ function Dialog(mainWindow) {
 
 // 1.创建浏览器窗口。
 function createWindow() {
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const { width, height } = primaryDisplay.workAreaSize
+
+  // mainWindow = new BrowserWindow({ width, height })
   // 1.1.创建浏览器窗口。
   mainWindow = new BrowserWindow({
-    width: 800, // 宽度
-    height: 600, // 高度
+    width: width, // 宽度
+    height: height, // 高度
+    // width: 800, // 宽度
+    // height: 600, // 高度
     autoHideMenuBar: false, // 自动隐藏菜单栏（默认是false）
     alwysOnTop: true, // 窗口置顶(类似z-index:9999，永远置于最高层) （默认是false）
     x: 0, // 窗口左上角x坐标
