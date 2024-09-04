@@ -9,6 +9,7 @@ const {
   Menu,
   MenuItem,
   Tray,
+  dialog,
 } = require("electron");
 // 引入path模块
 const path = require("path");
@@ -29,7 +30,7 @@ function readFile() {
   const res = fs.readFileSync("D:/hello.txt").toString();
   return res;
 }
-
+// 系统托盘
 function tray() {
   const tray = new Tray("./pages/assets/logo.png");
   const contextMenu = Menu.buildFromTemplate([
@@ -81,6 +82,7 @@ function tray() {
   });
 }
 
+// 应用菜单
 function ApplicationMenu() {
   const isMac = process.platform === "darwin";
 
@@ -182,6 +184,37 @@ function ApplicationMenu() {
   Menu.setApplicationMenu(menu);
 }
 
+// 文件浏览对话框
+function createDialog(mainWindow){
+  dialog.showOpenDialog(mainWindow,{
+    title: "请选择文件",
+    properties: ["openFile"],
+    filters: [
+      { name: "Images", extensions: ["jpg", "png", "gif"] },
+      { name: "Movies", extensions: ["mkv", "avi", "mp4"] },
+      { name: "Custom File Type", extensions: ["as"] },
+      { name: "All Files", extensions: ["*"] },
+    ]
+  }).then(result => {
+    // result.canceled 为true表示取消选择，false为选择成功
+    // result.filePaths 为选择的文件路径数组
+    // console.log(result);
+    if (!result.canceled) {
+      // 获取文件路径
+      const filePath = result.filePaths[0];
+      // 获取文件名
+      const fileName = path.basename(filePath);
+      // 获取文件后缀
+      const fileExt = path.extname(filePath);
+      // 获取文件大小
+      const fileSize = fs.statSync(filePath).size;
+      console.log(`文件名：${fileName},文件后缀：${fileExt},文件大小：${fileSize}字节`);
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+}
+
 // 1.创建浏览器窗口。
 function createWindow() {
   // 1.1.创建浏览器窗口。
@@ -196,6 +229,8 @@ function createWindow() {
       preload: path.join(__dirname, "./preload.js"),
     },
   });
+  // 文件对话框
+  createDialog(mainWindow)
   // 2.1.主进程注册对应的事件
   ipcMain.on("create-file", createFile);
 
