@@ -109,7 +109,7 @@ function ApplicationMenu() {
     // { role: 'fileMenu' }
     {
       label: "File",
-      submenu: [isMac ? { role: "close" } : { role: "quit",label:'退出' }],
+      submenu: [isMac ? { role: "close" } : { role: "quit", label: "退出" }],
     },
     // { role: 'editMenu' }
     {
@@ -185,34 +185,63 @@ function ApplicationMenu() {
 }
 
 // 文件浏览对话框
-function createDialog(mainWindow){
-  dialog.showOpenDialog(mainWindow,{
-    title: "请选择文件",
-    properties: ["openFile"],
-    filters: [
-      { name: "Images", extensions: ["jpg", "png", "gif"] },
-      { name: "Movies", extensions: ["mkv", "avi", "mp4"] },
-      { name: "Custom File Type", extensions: ["as"] },
-      { name: "All Files", extensions: ["*"] },
-    ]
-  }).then(result => {
-    // result.canceled 为true表示取消选择，false为选择成功
-    // result.filePaths 为选择的文件路径数组
-    // console.log(result);
-    if (!result.canceled) {
-      // 获取文件路径
-      const filePath = result.filePaths[0];
-      // 获取文件名
-      const fileName = path.basename(filePath);
-      // 获取文件后缀
-      const fileExt = path.extname(filePath);
-      // 获取文件大小
-      const fileSize = fs.statSync(filePath).size;
-      console.log(`文件名：${fileName},文件后缀：${fileExt},文件大小：${fileSize}字节`);
-    }
-  }).catch(err => {
-    console.log(err);
-  });
+function createDialog(mainWindow) {
+  dialog
+    .showOpenDialog(mainWindow, {
+      title: "请选择文件",
+      properties: ["openFile"],
+      filters: [
+        { name: "Images", extensions: ["jpg", "png", "gif"] },
+        { name: "Movies", extensions: ["mkv", "avi", "mp4"] },
+        { name: "Custom File Type", extensions: ["as"] },
+        { name: "All Files", extensions: ["*"] },
+      ],
+    })
+    .then((result) => {
+      // result.canceled 为true表示取消选择，false为选择成功
+      // result.filePaths 为选择的文件路径数组
+      // console.log(result);
+      if (!result.canceled) {
+        // 获取文件路径
+        const filePath = result.filePaths[0];
+        // 获取文件名
+        const fileName = path.basename(filePath);
+        // 获取文件后缀
+        const fileExt = path.extname(filePath);
+        // 获取文件大小
+        const fileSize = fs.statSync(filePath).size;
+        console.log(
+          `文件名：${fileName},文件后缀：${fileExt},文件大小：${fileSize}字节`
+        );
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+// 确认对话框
+function Dialog(mainWindow) {
+  dialog
+    .showMessageBox(mainWindow, {
+      type: "question",
+      defaultId: 0, // 默认选中的按钮的id(对应下面的buttons的索引值)
+      cancelId: 1, // 取消按钮的id(对应下面的buttons的索引值)
+      buttons: ["确定", "取消"],
+      icon:'./pages/assets/logo.png',
+      title: "确认对话框"+app.name,
+      message: "确定要退出吗？",
+    })
+    .then((result) => {
+      if(result.response===0){
+        app.exit(); // exit() 是退出应用，不是关闭窗口
+      }else{
+        console.log(result.response)
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 // 1.创建浏览器窗口。
@@ -230,7 +259,9 @@ function createWindow() {
     },
   });
   // 文件浏览对话框
-  createDialog(mainWindow)
+  // createDialog(mainWindow);
+  // 确认对话框
+  Dialog(mainWindow);
   // 2.1.主进程注册对应的事件
   ipcMain.on("create-file", createFile);
 
