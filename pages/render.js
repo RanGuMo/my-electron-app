@@ -17,12 +17,34 @@ btn3.addEventListener("click", async () => {
   document.body.innerHTML += `<h2>${data}</h2>`;
 });
 
-
 window.onload = () => {
-  myAPI.getMessage(logMessage)
+  myAPI.getMessage(logMessage);
 };
 
-function logMessage(event,str){
-    console.log(event,str)
-    alert(str)
+function logMessage(event, str) {
+  console.log(event, str);
+  alert(str);
 }
+
+// 屏幕录制
+const startButton = document.getElementById('startButton')
+const stopButton = document.getElementById('stopButton')
+const video = document.querySelector("video");
+startButton.addEventListener('click', () => {
+  navigator.mediaDevices.getDisplayMedia({
+    audio: true,
+    video: {
+      width: 320,
+      height: 240,
+      frameRate: 30
+    }
+  }).then(stream => {
+    video.srcObject = stream
+    video.onloadedmetadata = (e) => video.play()
+  }).catch(e => console.log(e))
+})
+
+stopButton.addEventListener('click', () => {
+  video.pause()
+})
+

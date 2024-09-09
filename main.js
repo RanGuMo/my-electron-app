@@ -11,6 +11,8 @@ const {
   Tray,
   dialog,
   screen,
+  desktopCapturer,
+  session
 } = require("electron");
 // 引入path模块
 const path = require("path");
@@ -265,6 +267,13 @@ function createWindow() {
       preload: path.join(__dirname, "./preload.js"),
     },
   });
+  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+    desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
+      // Grant access to the first screen found.
+      callback({ video: sources[0], audio: 'loopback' })
+    })
+  })
+
   // 文件浏览对话框
   // createDialog(mainWindow);
   // 确认对话框
