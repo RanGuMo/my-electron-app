@@ -27,3 +27,10 @@ const CLICK_MESSAGE = '我被点击了'
 
 new Notification(NOTIFICATION_TITLE, { body: NOTIFICATION_BODY }).onclick =
   () => alert(CLICK_MESSAGE)
+
+
+  if(window){
+    ipcRenderer.on("change-view",(event,url)=>{
+      window.location.href = url
+    })
+  }

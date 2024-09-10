@@ -18,6 +18,7 @@ const {
 const path = require("path");
 // 引入fs模块
 const fs = require("fs");
+const { url } = require("inspector");
 
 // 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，window对象将会自动的关闭
@@ -85,6 +86,9 @@ function tray() {
   });
 }
 
+const sendMenuEvent = async (url)=>{
+  mainWindow.webContents.send('change-view',url)
+}
 // 应用菜单
 function ApplicationMenu() {
   const isMac = process.platform === "darwin";
@@ -172,6 +176,14 @@ function ApplicationMenu() {
     {
       role: "help",
       submenu: [
+        // 添加一个菜单项，点击后会在当前窗口打开页面
+        {
+          label: "百度",
+          click: () => {
+           sendMenuEvent('https://www.baidu.com')
+          },
+        },
+        // 通过打开浏览器来打开官网
         {
           label: "Learn More",
           click: async () => {

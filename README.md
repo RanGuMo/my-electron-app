@@ -11,3 +11,13 @@ npm run start
 ```bash
 npm run build
 ```
+
+## 3.安装asar 
+```bash
+npm install -g asar
+```
+## 4.解压asar包
+来到 my-electron-app\dist\win-unpacked\resources 这个目录 会有一个 app.asar 文件
+```bash
+asar extract app.asar ./
+```
