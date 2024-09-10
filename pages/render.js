@@ -48,3 +48,9 @@ stopButton.addEventListener('click', () => {
   video.pause()
 })
 
+
+const openNew = document.getElementById('openNew')
+openNew.addEventListener('click',()=>{
+    window.open('https://www.baidu.com',"_self")
+})
+
